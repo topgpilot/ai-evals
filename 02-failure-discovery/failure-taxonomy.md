@@ -1,12 +1,13 @@
 # Failure Taxonomy · Ascend IQ
 
-Paste the markdown from the Module 2 Lab Guide (Activity 2) over this file, or upload the downloaded `failure-taxonomy.md` in its place, then commit.
-
 ## Top 3 Prioritized Failures
 
 | Rank | Failure | Trust Tag | Frequency | Severity |
 |---|---|---|---|---|
+| 1 | Old pricing | #HALLUCINATION | 8/20, HIGH | HIGH → P0 |
+| 2 | Inaccurate confirmation | #HALLUCINATION | 8/20, HIGH | HIGH → P0 |
+| 3 | Slang use | #UX_TRUST | 1/20, LOW | LOW → P3 |
 
 ## #1 Risk · Business Impact
 
-_This failure matters because [technical error] results in [business impact]._
+This failure matters because quoting incorrect or outdated pricing can result in severe legal consequences if contracts are signed or decisions are made based on incorrect data presented to the user.
