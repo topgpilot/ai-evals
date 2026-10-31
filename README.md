@@ -12,7 +12,7 @@ This is a **template repo**. Click **Use this template → Create a new reposito
 
 | Module | Artifact | Status | File |
 |---|---|---|---|
-| M1 | **Evaluation Strategy Canvas** | ☐ | `01-evaluation-strategy/strategy-canvas.md` |
+| M1 | **Evaluation Strategy Canvas** | ☑ | `01-evaluation-strategy/strategy-canvas.md` |
 | M2 | **Failure audit log** | ☐ | `02-failure-discovery/audit-log.md` |
 | M2 | **Failure Taxonomy** | ☐ | `02-failure-discovery/failure-taxonomy.md` |
 | M3 | **Eval suite** (three checks and their results) | ☐ | `03-eval-suites/eval-suite.md` |
