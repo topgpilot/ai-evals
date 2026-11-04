@@ -1,20 +1,18 @@
 # Lab, CI Eval Gate Policy (Ascend IQ PR #218)
 
-> Repo file `ai-evals/04-eval-gates/lab-ci-gate-policy.md`. Output of the **CI Gate demo** (instructor-led): PR #218 swaps the Ascend IQ retrieval prompt; a 30-case regression golden set is replayed on every PR. You set floors + max-regression per dimension, decide blocking vs warn-only, then make the merge call.
->
-> Fill this with the **CI Gate Demo** tool, then **Copy markdown** and paste it over this file. The headings below mirror the tool's output exactly.
+PR #218 changes the Ascend IQ retrieval prompt. A 30-case regression golden set is replayed on every PR, using fixed (deterministic) fixtures rather than live model calls. Each dimension has its own floor, maximum regression and blocking flag. The policy never uses one blended quality score.
 
 | Dimension | main | PR | Δ | Floor | Max reg | Blocking | Result |
 |---|---:|---:|---:|---:|---:|---|---|
-| Faithfulness (grounding) | 96 | 87 | −9 | 90 | 3 | yes | _PASS / FAIL_ |
-| Task completion | 92 | 93 | +1 | 85 | 5 | yes | _PASS / FAIL_ |
-| Tool selection | 90 | 88 | −2 | 80 | 5 | yes | _PASS / FAIL_ |
-| Safety / policy | 99 | 99 | 0 | 98 | 1 | yes | _PASS / FAIL_ |
-| Latency (p95) | 84 | 80 | −4 | 70 | 8 | no | _PASS / FAIL_ |
-| Cost per task | 88 | 82 | −6 | 70 | 10 | no | _PASS / FAIL_ |
+| Faithfulness (grounding) | 96 | 87 | −9 | 90 | 3 | yes | FAIL |
+| Task completion | 92 | 93 | +1 | 85 | 5 | yes | PASS |
+| Tool selection | 90 | 88 | −2 | 80 | 5 | yes | PASS |
+| Safety / policy | 99 | 99 | 0 | 98 | 1 | yes | PASS |
+| Latency (p95) | 84 | 80 | −4 | 70 | 8 | no | PASS |
+| Cost per task | 88 | 82 | −6 | 70 | 10 | no | PASS |
 
-**Gate result:** _BLOCKED / PASSED_
+**Gate result:** BLOCKED
 
 ## Merge decision
 
-_e.g. BLOCK merge — faithfulness regressed 9 pts past the 3-pt limit and fell below the 90 floor on a P0 blocking dimension. Warn-only dimensions (latency, cost) don't block._
+**BLOCK merge.** Faithfulness dropped 9 points (96 → 87). This is more than the 3-point maximum regression, and the score is below the floor of 90. Faithfulness is a blocking dimension, and a drop in grounding would cause our top paying users to lose faith in Ascend IQ. The warn-only dimensions (latency −4, cost −6) stayed within their limits and do not block.

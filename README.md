@@ -17,9 +17,9 @@ This is a **template repo**. Click **Use this template → Create a new reposito
 | M2 | **Failure Taxonomy** | ☑ | `02-failure-discovery/failure-taxonomy.md` |
 | M3 | **Eval suite** (three checks and their results) | ☑ | `03-eval-suites/eval-suite.md` |
 | M3 | **Eval spec** (five parts and three team messages) | ☑ | `03-eval-suites/eval-spec.md` |
-| M4 | **Eval gate map** (severity × placement) | ☐ | `04-eval-gates/lab-1-gate-map.md` |
-| M4 | **CI gate policy** (PR #218 replay) | ☐ | `04-eval-gates/lab-ci-gate-policy.md` |
-| M4 | **Launch strategy** (release criteria + CI policy + mitigation) | ☐ | `04-eval-gates/lab-2-launch-strategy.md` |
+| M4 | **Eval gate map** (severity × placement) | ☑ | `04-eval-gates/lab-1-gate-map.md` |
+| M4 | **CI gate policy** (PR #218 replay) | ☑ | `04-eval-gates/lab-ci-gate-policy.md` |
+| M4 | **Launch strategy** (release criteria + CI policy + mitigation) | ☑ | `04-eval-gates/lab-2-launch-strategy.md` |
 | M5 | **Coverage matrix** | ☐ | `05-scale/lab-1-coverage-matrix.md` |
 | M5 | **Eval budget** | ☐ | `05-scale/lab-2-budget-crisis.md` |
 | M6 | **Ship / Hold memo** | ☐ | `06-culture/lab-1-ship-hold-memo.md` |

@@ -1,16 +1,20 @@
 # Lab 1, Ascend Analytics Coverage Matrix
 
-> Repo file `ai-evals/05-scale/lab-1-coverage-matrix.md`. Feeds the **Coverage / scale** slide of the final pitch deck (Module 6).
->
-> Fill this with the **Coverage Matrix Tool**, then **Copy markdown** and paste it over this file. The headings below mirror the tool's output exactly. **Force ≥2 ❌ gaps** — an all-green matrix isn't real.
+**Product:** AI Report Summaries. External, used by clients. Writes executive summaries of research reports, which are sent straight to clients.
 
-**Product:** _…_
+**What runs today:** an LLM judge compares each summary with its source report before every release. Response time is logged, but no target has been set.
 
 ## Coverage row
 
-| Product | Hallucination | Bias | Latency | Toxicity | Drift Monitoring |
+| Product | Hallucination Rate | Fairness | Latency | UX Trust | Robustness |
 |---|---|---|---|---|---|
-| _…_ | _✅ / ⚠️ / ❌_ | _✅ / ⚠️ / ❌_ | _✅ / ⚠️ / ❌_ | _✅ / ⚠️ / ❌_ | _✅ / ⚠️ / ❌_ |
+| AI Report Summaries | ✅ | ❌ | ⚠️ | ❌ | ❌ |
+
+- **Hallucination Rate ✅:** an LLM judge compares each summary with its source report before every release.
+- **Fairness ❌:** nothing tests whether summaries are equally good across different clients, regions or languages.
+- **Latency ⚠️:** response time is logged, but there is no target, so no one can tell a pass from a fail.
+- **UX Trust ❌:** the judge checks facts against the source, not tone, so nothing checks how the summaries sound to clients.
+- **Robustness ❌:** nothing tests summaries of messy, incomplete or unusual reports.
 
 ## Method + Ground Truth (two ✅/⚠️ cells)
 
@@ -24,9 +28,11 @@
 
 ## Strategic acceptance
 
-**Accepted gap:** _which ❌ you're accepting_
+**Accepted gap:** Fairness ❌
 
-> _Why it's an acceptable risk right now + the kill criterion / date that would change the call._
+> **Why we can accept it for now:** We accept this gap because the solution is targeted at the European market only, where most of our paying customers are, and the summaries are written in English only. A fix would therefore cost more than the risk.
+>
+> **What would change our mind, and when we'll look again:** We'll look again when non-English-speaking clients pass 25% of our clients, or when clients ask for summaries in other languages.
 
 ## Critical mitigation
 
