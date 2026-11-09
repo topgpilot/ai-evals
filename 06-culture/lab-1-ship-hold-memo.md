@@ -3,7 +3,7 @@
 > **Decision:** 🛑 HOLD
 
 **To:** CPO · cc Eng Lead · Trust & Safety
-**From:** [Your Name] · AI Evals Cohort · 8 November 2026
+**From:** Pritam · AI Evals Cohort · 8 November 2026
 
 ## The Answer
 
