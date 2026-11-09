@@ -20,14 +20,16 @@ This is a **template repo**. Click **Use this template → Create a new reposito
 | M4 | **Eval gate map** (severity × placement) | ☑ | `04-eval-gates/lab-1-gate-map.md` |
 | M4 | **CI gate policy** (PR #218 replay) | ☑ | `04-eval-gates/lab-ci-gate-policy.md` |
 | M4 | **Launch strategy** (release criteria + CI policy + mitigation) | ☑ | `04-eval-gates/lab-2-launch-strategy.md` |
-| M5 | **Coverage matrix** | ☐ | `05-scale/lab-1-coverage-matrix.md` |
-| M5 | **Eval budget** | ☐ | `05-scale/lab-2-budget-crisis.md` |
-| M6 | **Ship / Hold memo** | ☐ | `06-culture/lab-1-ship-hold-memo.md` |
-| M6 | **Final pitch deck** (generated HTML) | ☐ | `06-culture/lab-2-final-pitch.html` |
+| M5 | **Coverage matrix** | ☑ | `05-scale/lab-1-coverage-matrix.md` |
+| M5 | **Eval budget** | ☑ | `05-scale/lab-2-budget-crisis.md` |
+| M6 | **Ship / Hold memo** | ☑ | `06-culture/lab-1-ship-hold-memo.md` |
+| M6 | **Final pitch deck** (generated HTML) | ☑ | `06-culture/lab-2-final-pitch.html` |
 
 ## The feature in one sentence
 
-_What LLM feature are you evaluating, who relies on it, and what is the cost of getting it wrong?_
+**Ascend IQ** is the LLM copilot in Ascend Analytics' market-intelligence platform: VP-level strategists at Fortune 500 clients, who pay $50,000+ a year for verified data, ask it plain-language questions and expect a verifiable answer in about 5 seconds, so a single fabricated or outdated figure can cost a contract and our Q4 retention goal.
+
+**Final call: 🛑 HOLD.** In a 20-answer audit, the Hard gate failed at 10% (bar 0%) and the Soft gate at 25% (bar ≤ 5%). Re-gate on 30 November 2026. See the [Ship/Hold memo](06-culture/lab-1-ship-hold-memo.md) and the [pitch deck](06-culture/lab-2-final-pitch.html).
 
 ---
 
