@@ -1,22 +1,618 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Final Pitch Deck — placeholder</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#07162C; color:#e8eefc; margin:0; display:grid; place-items:center; min-height:100vh; }
-    .card { max-width:640px; padding:40px; line-height:1.6; }
-    h1 { font-size:22px; margin:0 0 12px; }
-    code { background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-size:13px; }
-    a { color:#8ec5ff; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ascend IQ · Ship or Hold?</title>
+<style>
+  :root {
+    --bg: #07162C;
+    --surface: #0D2242;
+    --surface-2: #12305A;
+    --line: rgba(232, 238, 252, 0.12);
+    --text: #E8EEFC;
+    --muted: #A3B3D1;
+    --accent: #8EC5FF;
+    --fail: #FF7A7A;
+    --fail-bg: rgba(255, 122, 122, 0.14);
+    --pass: #5EE0A0;
+    --pass-bg: rgba(94, 224, 160, 0.14);
+    --warn: #FFC861;
+    --warn-bg: rgba(255, 200, 97, 0.14);
+    --purple: #C3A6FF;
+    --radius: 14px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- deck chrome ---------- */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); transition: width .25s ease; z-index: 10; }
+  .nav {
+    position: fixed; right: 16px; bottom: 16px; z-index: 10;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(13, 34, 66, 0.92); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px;
+  }
+  .nav button {
+    all: unset; cursor: pointer; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--text); font-size: 18px;
+  }
+  .nav button:hover, .nav button:focus-visible { background: var(--surface-2); outline: none; }
+  .nav .count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; min-width: 48px; text-align: center; }
+
+  /* ---------- slides ---------- */
+  .slide {
+    display: none;
+    min-height: 100vh; min-height: 100dvh;
+    padding: clamp(28px, 5vw, 64px) clamp(16px, 5vw, 72px) 88px;
+  }
+  .slide.active { display: block; animation: fade .3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .inner { max-width: 1120px; margin: 0 auto; }
+
+  .kicker { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 10px; }
+  h1 { font-size: clamp(34px, 5.6vw, 64px); line-height: 1.05; margin: 0 0 18px; letter-spacing: -0.02em; }
+  h2 { font-size: clamp(26px, 3.6vw, 40px); line-height: 1.12; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  h1, h2 { text-wrap: balance; }
+  .lede { color: var(--muted); font-size: clamp(16px, 1.7vw, 19px); max-width: 760px; margin: 0 0 28px; }
+  p { margin: 0 0 10px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13.5px; }
+  strong { color: #fff; }
+
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 860px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .card.fail { border-color: rgba(255,122,122,.45); }
+  .card.pass { border-color: rgba(94,224,160,.4); }
+  .card .num { font-size: 34px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .card .label { color: var(--muted); font-size: 14px; }
+
+  .chip {
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+    padding: 2px 9px; border-radius: 999px; vertical-align: middle; white-space: nowrap;
+  }
+  .chip.fail { color: var(--fail); background: var(--fail-bg); }
+  .chip.pass { color: var(--pass); background: var(--pass-bg); }
+  .chip.warn { color: var(--warn); background: var(--warn-bg); }
+  .chip.info { color: var(--accent); background: rgba(142,197,255,.14); }
+
+  blockquote {
+    margin: 0; padding: 16px 20px; border-left: 3px solid var(--accent);
+    background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0; font-size: 17px;
+  }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; background: var(--surface); }
+  tr:last-child td { border-bottom: 0; }
+  td.r, th.r { text-align: right; }
+  tr.hl td { background: var(--fail-bg); }
+
+  /* title slide */
+  .title-wrap { min-height: calc(100vh - 160px); display: flex; flex-direction: column; justify-content: center; }
+  .verdict {
+    display: inline-flex; align-items: center; gap: 12px; margin-top: 8px;
+    background: var(--fail-bg); color: var(--fail); border: 1px solid rgba(255,122,122,.5);
+    padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: 18px; width: fit-content;
+  }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--fail); }
+  .byline { margin-top: 40px; color: var(--muted); font-size: 14px; }
+
+  /* waffle */
+  .waffle { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; max-width: 520px; }
+  .cell {
+    aspect-ratio: 1; border-radius: 8px; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; color: #07162C; position: relative;
+  }
+  .cell.p { background: #2A4670; color: var(--muted); }
+  .cell.h { background: var(--fail); }
+  .cell.r { background: var(--warn); }
+  .cell.u { background: var(--purple); }
+  .cell.o::after {
+    content: ""; position: absolute; inset: -3px; border: 2px dashed var(--text); border-radius: 10px;
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 13.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  /* gate grid */
+  .gate { display: grid; grid-template-columns: 120px repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .gate .hd { color: var(--muted); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 4px 6px; }
+  .gate .sev { font-weight: 700; padding: 12px 10px; border-radius: 10px; display: flex; align-items: center; }
+  .gate .sev.hard { background: var(--fail-bg); color: var(--fail); }
+  .gate .sev.soft { background: var(--warn-bg); color: var(--warn); }
+  .gate .sev.adv { background: rgba(142,197,255,.12); color: var(--accent); }
+  .gate .box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; min-height: 64px; font-size: 13px; }
+  .gate .box .t { display: block; margin-bottom: 4px; }
+  .gate .box .t b { font-variant-numeric: tabular-nums; color: #fff; }
+  .gate .box.empty { color: rgba(163,179,209,.5); display: grid; place-items: center; }
+  @media (max-width: 700px) { .gate { grid-template-columns: 76px repeat(3, minmax(0, 1fr)); } .gate .box { font-size: 12px; padding: 8px; } }
+
+  /* bars */
+  .bar-row { margin-bottom: 16px; }
+  .bar-row .top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; font-size: 14.5px; }
+  .track { position: relative; height: 14px; background: #1A355E; border-radius: 999px; overflow: visible; }
+  .fill { height: 100%; border-radius: 999px; }
+  .mark { position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text); }
+
+  .stack { display: flex; height: 44px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+  .stack > div { display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #07162C; min-width: 0; overflow: hidden; white-space: nowrap; }
+
+  /* coverage row */
+  .cov { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .cov .c { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: center; }
+  .cov .c .ic { font-size: 22px; display: block; margin-bottom: 4px; }
+  .cov .c .n { font-size: 13px; font-weight: 600; }
+  @media (max-width: 700px) { .cov { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* timeline */
+  .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; position: relative; }
+  .timeline .step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .timeline .date { color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .timeline .step.now { border-color: var(--accent); }
+  @media (max-width: 860px) { .timeline { grid-template-columns: 1fr; } }
+
+  ul.clean { list-style: none; padding: 0; margin: 0; }
+  ul.clean li { padding: 8px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+  ul.clean li:last-child { border-bottom: 0; }
+
+  .src { color: var(--muted); font-size: 12px; margin-top: 18px; }
+  .src code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 4px; }
+
+  @media print {
+    .nav, .progress { display: none; }
+    .slide { display: block !important; page-break-after: always; min-height: auto; }
+  }
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Replace this file with your generated pitch deck.</h1>
-    <p>This is a placeholder. In <strong>Module 6</strong>, use the <em>Final Pitch Prompt Generator</em> to assemble every M1–M5 artifact plus your Ship/Hold memo into a single prompt, paste it into ChatGPT / Claude / Gemini, and save the returned HTML deck here as <code>06-culture/lab-2-final-pitch.html</code>.</p>
-    <p>Then submit this deck plus your repo URL to the learning platform within 7 days of your cohort ending.</p>
+<div class="progress" id="progress"></div>
+
+<!-- 1 · TITLE -->
+<section class="slide" data-title="Title">
+  <div class="inner title-wrap">
+    <p class="kicker">AI Evals · Final project</p>
+    <h1>Ascend IQ:<br>ship it to our top 50 accounts?</h1>
+    <p class="lede">One evaluation system for an LLM market-intelligence copilot: strategy, failure discovery, an eval suite, release gates and an eval budget, ending in a ship/hold call.</p>
+    <div class="verdict"><span class="dot"></span>Recommendation: HOLD · re-gate 30 Nov 2026</div>
+    <p class="byline">[Your Name] · Product School AI Evals cohort · November 2026</p>
   </div>
+</section>
+
+<!-- 2 · FEATURE & STAKES -->
+<section class="slide" data-title="The feature">
+  <div class="inner">
+    <p class="kicker">Module 1 · Strategy</p>
+    <h2>Who relies on Ascend IQ, and what a wrong answer costs</h2>
+    <p class="lede">Ascend IQ lets clients ask the Ascend Analytics platform plain-language questions and get answers in seconds instead of digging through it.</p>
+    <div class="grid g3">
+      <div class="card">
+        <h3>Who it's for</h3>
+        <p class="muted">VP-level strategists and product leaders at Fortune 500 companies who pay <strong>$50,000+ a year</strong> for verified market intelligence.</p>
+      </div>
+      <div class="card">
+        <h3>What they ask</h3>
+        <p class="muted">"Compare the pricing models of Stripe and Adyen." Complex, multi-part questions, sometimes with typos, that feed strategic decisions.</p>
+      </div>
+      <div class="card fail">
+        <h3>What's at stake</h3>
+        <p class="muted">Engagement is dropping and <strong>Q4 retention is at risk</strong>. The CPO wants it live for the <strong>top 50 enterprise accounts</strong>. One poor answer to the wrong client can do lasting damage.</p>
+      </div>
+    </div>
+    <div style="margin-top:22px">
+      <blockquote>For all executive clients, Ascend IQ promises a <strong>verifiable, clear and brief</strong> response in <strong>about 5 seconds</strong>, without manual data mining, so that Ascend Analytics can meet its Q4 retention milestone.</blockquote>
+    </div>
+    <p class="src">Source: <code>01-evaluation-strategy/strategy-canvas.md</code></p>
+  </div>
+</section>
+
+<!-- 3 · TRUST METRICS -->
+<section class="slide" data-title="Trust metrics">
+  <div class="inner">
+    <p class="kicker">Module 1 · Strategy</p>
+    <h2>Three trust metrics, and what we give up for them</h2>
+    <p class="lede">Each metric is tied to the promise. When they conflict, being correct wins over being fast.</p>
+    <div class="grid g3">
+      <div class="card">
+        <p class="kicker" style="color:var(--fail)">Hallucination rate</p>
+        <p>% of answers that are confidently false or fabricated.</p>
+        <p class="muted small">Clients pay for verified data. One fabricated statistic can put the whole contract at risk.</p>
+      </div>
+      <div class="card">
+        <p class="kicker" style="color:var(--warn)">Robustness</p>
+        <p>Coherent, correct answers on messy, multi-part or out-of-scope questions.</p>
+        <p class="muted small">VPs ask complex questions with typos and still expect a clear, verifiable answer.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">Latency</p>
+        <p>P95 response time <strong>≤ 5 seconds</strong>.</p>
+        <p class="muted small">Ascend IQ has to stay faster than searching the platform by hand.</p>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>Trade-off 1 · Hallucination over Latency</h3>
+        <p class="muted small">A slower but accurate answer builds trust. A fast wrong one can cost a $100,000 contract.</p>
+      </div>
+      <div class="card">
+        <h3>Trade-off 2 · Robustness over Latency</h3>
+        <p class="muted small">When the question is messy, the answer must still be clear and unambiguous, even if it takes longer.</p>
+      </div>
+    </div>
+    <p class="src">Source: <code>01-evaluation-strategy/strategy-canvas.md</code></p>
+  </div>
+</section>
+
+<!-- 4 · FAILURE AUDIT -->
+<section class="slide" data-title="Failure audit">
+  <div class="inner">
+    <p class="kicker">Module 2 · Failure discovery</p>
+    <h2>Half of 20 audited answers failed, mostly by making things up</h2>
+    <p class="lede">An LLM judge (ChatGPT) scored 20 real Ascend IQ answers against their reference sources. I reviewed every call and overrode three.</p>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="waffle" role="img" aria-label="20 audited answers: 10 pass, 8 hallucination, 1 robustness, 1 UX trust failure. Rows 9, 13 and 15 were overridden by the human reviewer.">
+          <div class="cell h">1</div><div class="cell p">2</div><div class="cell h">3</div><div class="cell h">4</div><div class="cell p">5</div>
+          <div class="cell h">6</div><div class="cell h">7</div><div class="cell r">8</div><div class="cell h o">9</div><div class="cell p">10</div>
+          <div class="cell p">11</div><div class="cell p">12</div><div class="cell p o">13</div><div class="cell h">14</div><div class="cell h o">15</div>
+          <div class="cell u">16</div><div class="cell p">17</div><div class="cell p">18</div><div class="cell p">19</div><div class="cell p">20</div>
+        </div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--fail)"></i>Hallucination · 8</span>
+          <span><i class="sw" style="background:var(--warn)"></i>Robustness · 1</span>
+          <span><i class="sw" style="background:var(--purple)"></i>UX trust · 1</span>
+          <span><i class="sw" style="background:#2A4670"></i>Pass · 10</span>
+          <span><i class="sw" style="border:2px dashed var(--text)"></i>My override</span>
+        </div>
+      </div>
+      <div>
+        <div class="grid g2">
+          <div class="card fail"><div class="num" style="color:var(--fail)">8 / 20</div><div class="label">hallucinations (40%)</div></div>
+          <div class="card"><div class="num">85%</div><div class="label">judge–human agreement (3 of 20 overridden)</div></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Top 3 prioritized failures</h3>
+          <ul class="clean small">
+            <li><span>1 · Old pricing ($49 quoted, $59 current)</span><span class="chip fail">P0</span></li>
+            <li><span>2 · Tentative speaker listed as confirmed</span><span class="chip fail">P0</span></li>
+            <li><span>3 · Slang in a client cold email</span><span class="chip info">P3</span></li>
+          </ul>
+        </div>
+        <p class="muted small" style="margin-top:12px">Overrides: row 9 (invented "Series B") and row 15 ("approximately 275") changed to fail. Row 13 (legal refusal) changed to pass, because the policy says refuse legal queries.</p>
+      </div>
+    </div>
+    <p class="src">Sources: <code>02-failure-discovery/audit-log.md</code> · <code>02-failure-discovery/failure-taxonomy.md</code></p>
+  </div>
+</section>
+
+<!-- 5 · EVAL SUITE -->
+<section class="slide" data-title="Eval suite">
+  <div class="inner">
+    <p class="kicker">Module 3 · Eval suite</p>
+    <h2>Three checks on the P0: old pricing</h2>
+    <p class="lede">Clients sign contracts on these numbers, so the bar is absolute: <strong>100% of pricing answers must pass all three checks.</strong> One failure blocks the build.</p>
+    <div class="grid g2" style="align-items:start">
+      <div class="card fail">
+        <p class="kicker" style="color:var(--fail)">The failing answer · row 1</p>
+        <p><span class="muted">Q:</span> What is InsightFlow's pricing for Enterprise?</p>
+        <p><span class="muted">A:</span> "InsightFlow Enterprise starts at <strong>$49</strong>/user/month with a 10-seat minimum."</p>
+        <p><span class="muted">Source:</span> Old price $49/mo. <strong>New price (updated yesterday): $59/mo.</strong></p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check</th><th>Row 1</th><th class="r">False alarms</th><th class="r">Hallucinations caught</th></tr></thead>
+          <tbody>
+            <tr><td>Rule check</td><td><span class="chip pass">Caught</span></td><td class="r">0</td><td class="r">1 of 8</td></tr>
+            <tr><td>Safety rule</td><td><span class="chip pass">Caught</span></td><td class="r">0</td><td class="r">1 of 8</td></tr>
+            <tr><td>LLM judge</td><td><span class="chip pass">Caught</span></td><td class="r">0</td><td class="r">1 of 8</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>What the user sees when a check fails</h3>
+        <p class="muted small">No price at all: "I can't confirm the latest price for this product right now. Please check the vendor's official pricing page before you use this figure." The answer is logged for QA.</p>
+      </div>
+      <div class="card">
+        <h3>The honest limit</h3>
+        <p class="muted small">Pricing checks catch pricing errors and nothing else. The other 7 hallucinations got through. Next: check the price database before any price is shown, and add checks for the other failure types.</p>
+      </div>
+    </div>
+    <p class="src">Sources: <code>03-eval-suites/eval-suite.md</code> · <code>03-eval-suites/eval-spec.md</code></p>
+  </div>
+</section>
+
+<!-- 6 · GATE MAP -->
+<section class="slide" data-title="Gate map">
+  <div class="inner">
+    <p class="kicker">Module 4 · Eval gates</p>
+    <h2>Every failure has a severity and a place in the pipeline</h2>
+    <p class="lede">10 confirmed failures → <strong>2 Hard</strong> (block release), <strong>5 Soft</strong> (team must fix before release), <strong>3 Advisory</strong> (warning only). The correct legal refusal (row 13) is deliberately not gated.</p>
+    <div class="gate" role="table" aria-label="Gate map: severity by pipeline stage">
+      <div class="hd"></div><div class="hd">PR</div><div class="hd">Staging</div><div class="hd">Release</div>
+
+      <div class="sev hard">Hard</div>
+      <div class="box"><span class="t"><b>01</b> Old pricing</span></div>
+      <div class="box"><span class="t"><b>04</b> Tentative speaker shown as confirmed</span></div>
+      <div class="box empty">—</div>
+
+      <div class="sev soft">Soft</div>
+      <div class="box empty">—</div>
+      <div class="box">
+        <span class="t"><b>07</b> Wrong competitor comparison</span>
+        <span class="t"><b>08</b> Refused SOC2, evidence visible</span>
+        <span class="t"><b>14</b> Austin called an HQ</span>
+        <span class="t"><b>16</b> Slang in cold email</span>
+      </div>
+      <div class="box"><span class="t"><b>15</b> "Approximately" 275</span></div>
+
+      <div class="sev adv">Advisory</div>
+      <div class="box empty">—</div>
+      <div class="box">
+        <span class="t"><b>03</b> "Native" SQL export</span>
+        <span class="t"><b>06</b> Director vs Sr. Director</span>
+        <span class="t"><b>09</b> Invented "Series B"</span>
+      </div>
+      <div class="box empty">—</div>
+    </div>
+    <p class="src">Source: <code>04-eval-gates/lab-1-gate-map.md</code></p>
+  </div>
+</section>
+
+<!-- 7 · RELEASE CRITERIA + CI -->
+<section class="slide" data-title="Release criteria">
+  <div class="inner">
+    <p class="kicker">Module 4 · Release criteria + CI</p>
+    <h2>Both blocking gates fail, and so does PR #218</h2>
+    <p class="lede">Measured on the 20 audited answers. CI is judged one dimension at a time, never as one blended score.</p>
+    <div class="grid g2" style="align-items:start">
+      <div class="card">
+        <div class="bar-row">
+          <div class="top"><span><strong>Hard</strong> · bar = 0%</span><span><strong style="color:var(--fail)">10%</strong> <span class="chip fail">FAIL</span></span></div>
+          <div class="track"><div class="fill" style="width:20%;background:var(--fail)"></div><div class="mark" style="left:0%" data-l="0%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="top"><span><strong>Soft</strong> · bar ≤ 5%</span><span><strong style="color:var(--fail)">25%</strong> <span class="chip fail">FAIL</span></span></div>
+          <div class="track"><div class="fill" style="width:50%;background:var(--fail)"></div><div class="mark" style="left:10%" data-l="5%"></div></div>
+        </div>
+        <div class="bar-row" style="margin-bottom:4px">
+          <div class="top"><span><strong>Advisory</strong> · warn at ≥ 15%</span><span><strong style="color:var(--warn)">15%</strong> <span class="chip warn">WARN</span></span></div>
+          <div class="track"><div class="fill" style="width:30%;background:var(--warn)"></div><div class="mark" style="left:30%" data-l="15%"></div></div>
+        </div>
+        <p class="muted small" style="margin-top:14px">Scale: 0–50% of audited answers. Hard 2/20 · Soft 5/20 · Advisory 3/20.</p>
+      </div>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>PR #218 dimension</th><th class="r">main</th><th class="r">PR</th><th class="r">Δ</th><th class="r">Floor</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr class="hl"><td>Faithfulness</td><td class="r">96</td><td class="r">87</td><td class="r">−9</td><td class="r">90</td><td><span class="chip fail">FAIL</span></td></tr>
+              <tr><td>Task completion</td><td class="r">92</td><td class="r">93</td><td class="r">+1</td><td class="r">85</td><td><span class="chip pass">PASS</span></td></tr>
+              <tr><td>Tool selection</td><td class="r">90</td><td class="r">88</td><td class="r">−2</td><td class="r">80</td><td><span class="chip pass">PASS</span></td></tr>
+              <tr><td>Safety / policy</td><td class="r">99</td><td class="r">99</td><td class="r">0</td><td class="r">98</td><td><span class="chip pass">PASS</span></td></tr>
+              <tr><td>Latency p95 <span class="muted">(warn)</span></td><td class="r">84</td><td class="r">80</td><td class="r">−4</td><td class="r">70</td><td><span class="chip pass">PASS</span></td></tr>
+              <tr><td>Cost/task <span class="muted">(warn)</span></td><td class="r">88</td><td class="r">82</td><td class="r">−6</td><td class="r">70</td><td><span class="chip pass">PASS</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:12px"><span class="chip fail">BLOCKED</span> Faithfulness fell 9 points, 3× the allowed maximum drop, and below its floor. The mitigation lever: <strong>delay launch</strong> until Soft ≤ 5%.</p>
+      </div>
+    </div>
+    <p class="src">Sources: <code>04-eval-gates/lab-2-launch-strategy.md</code> · <code>04-eval-gates/lab-ci-gate-policy.md</code></p>
+  </div>
+</section>
+
+<!-- 8 · COVERAGE -->
+<section class="slide" data-title="Coverage">
+  <div class="inner">
+    <p class="kicker">Module 5 · Scale</p>
+    <h2>Coverage at portfolio scale: three honest gaps</h2>
+    <p class="lede">Applied to a second product line, <strong>AI Report Summaries</strong> (executive summaries sent straight to clients), only one risk is fully covered today.</p>
+    <div class="cov">
+      <div class="c"><span class="ic">✅</span><span class="n">Hallucination</span><p class="muted small" style="margin:4px 0 0">Judge vs source report, every release</p></div>
+      <div class="c"><span class="ic">⚠️</span><span class="n">Latency</span><p class="muted small" style="margin:4px 0 0">Logged, but no target</p></div>
+      <div class="c"><span class="ic">❌</span><span class="n">Fairness</span><p class="muted small" style="margin:4px 0 0">Not tested across clients or regions</p></div>
+      <div class="c"><span class="ic">❌</span><span class="n">UX trust</span><p class="muted small" style="margin:4px 0 0">Tone not checked</p></div>
+      <div class="c"><span class="ic">❌</span><span class="n">Robustness</span><p class="muted small" style="margin:4px 0 0">Messy reports not tested</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card">
+        <p class="kicker">Accepted gap · Fairness</p>
+        <p class="small">We target the European market and write in English only, so a fix would cost more than the risk today.</p>
+        <p class="small muted"><strong>Kill criterion:</strong> non-English-speaking clients pass 25% of our clients, or clients ask for other languages.</p>
+      </div>
+      <div class="card fail">
+        <p class="kicker" style="color:var(--fail)">Cannot accept · Robustness</p>
+        <p class="small">A broken summary of a messy report, sent to a paying client, puts the renewal at risk.</p>
+        <p class="small muted"><strong>Plan:</strong> a messy-report test set every release must pass, plus a weekly LLM judge on live summaries. <strong>QA team, 30 Nov 2026.</strong></p>
+      </div>
+    </div>
+    <p class="src">Source: <code>05-scale/lab-1-coverage-matrix.md</code></p>
+  </div>
+</section>
+
+<!-- 9 · BUDGET -->
+<section class="slide" data-title="Budget">
+  <div class="inner">
+    <p class="kicker">Module 5 · Budget crisis</p>
+    <h2>$187,500 of a $200,000 cap, with L3 on our three trust metrics</h2>
+    <p class="lede">Hallucination, Context and Attribution all at L3 would cost $220,000, over the cap. So one P1 had to drop: Context goes to L2.</p>
+    <div class="stack" role="img" aria-label="Budget split: Hallucination 85K, Attribution 65K, Latency 25K, Context 7K, Bias 5.5K, unallocated 12.5K of 200K">
+      <div style="width:42.5%;background:var(--fail)">Hallucination $85K</div>
+      <div style="width:32.5%;background:var(--warn)">Attribution $65K</div>
+      <div style="width:12.5%;background:var(--accent)">Latency $25K</div>
+      <div style="width:3.5%;background:var(--purple)" title="Context $7K"></div>
+      <div style="width:2.75%;background:var(--pass)" title="Bias $5.5K"></div>
+      <div style="width:6.25%;background:#1A355E;color:var(--muted)" title="Unallocated $12.5K"></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--purple)"></i>Context $7K</span>
+      <span><i class="sw" style="background:var(--pass)"></i>Bias $5.5K</span>
+      <span><i class="sw" style="background:#1A355E;border:1px solid var(--line)"></i>Unallocated $12.5K</span>
+    </div>
+    <div class="table-wrap" style="margin-top:16px">
+      <table>
+        <thead><tr><th>Failure</th><th>Trust metric</th><th>Risk</th><th>Level</th><th class="r">Cost</th><th>Fallback if not L3</th></tr></thead>
+        <tbody>
+          <tr><td>Data fabrication</td><td>Hallucination</td><td>P0</td><td><span class="chip fail">L3</span></td><td class="r">$85,000</td><td class="muted">—</td></tr>
+          <tr><td>Source attribution</td><td>Robustness</td><td>P1</td><td><span class="chip fail">L3</span></td><td class="r">$65,000</td><td class="muted">—</td></tr>
+          <tr><td>Cost overruns</td><td>Latency</td><td>P3</td><td><span class="chip fail">L3</span></td><td class="r">$25,000</td><td class="muted">—</td></tr>
+          <tr><td>Context specificity</td><td>UX trust</td><td>P1</td><td><span class="chip info">L2</span></td><td class="r">$7,000</td><td class="muted">Soft gate at staging (≤ 5%). UX trust was 1/20 in the audit.</td></tr>
+          <tr><td>Data bias</td><td>Fairness</td><td>P2</td><td><span class="chip info">L2</span></td><td class="r">$5,500</td><td class="muted">Monthly sampled review. Kill criterion: 25% non-English clients.</td></tr>
+          <tr><td colspan="4"><strong>Total · 3 of 3 L3 slots</strong></td><td class="r"><strong>$187,500</strong></td><td><span class="chip pass">UNDER CAP</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: <code>05-scale/lab-2-budget-crisis.md</code></p>
+  </div>
+</section>
+
+<!-- 10 · RECOMMENDATION -->
+<section class="slide" data-title="Recommendation">
+  <div class="inner">
+    <p class="kicker">Module 6 · Ship / Hold</p>
+    <h2><span style="color:var(--fail)">HOLD.</span> 1 in 10 answers failed a gate that must be at 0%.</h2>
+    <p class="lede">Our clients pay $50,000+ a year for data they can trust, and in our audit Ascend IQ quoted an outdated price and listed a tentative speaker as confirmed. The fixes are known, funded and dated.</p>
+    <div class="grid g2" style="align-items:start">
+      <div class="card">
+        <h3>Evidence vs gate</h3>
+        <ul class="clean small">
+          <li><span>Hard-gate failures: <strong>10%</strong> (bar 0%)</span><span class="chip fail">FAIL</span></li>
+          <li><span>Soft-gate failures: <strong>25%</strong> (bar ≤ 5%)</span><span class="chip fail">FAIL</span></li>
+          <li><span>Pricing answers passing all 3 checks: <strong>0/1</strong> (bar 100%)</span><span class="chip fail">FAIL</span></li>
+          <li><span>Faithfulness, PR #218: <strong>87</strong> (floor 90)</span><span class="chip fail">FAIL</span></li>
+          <li><span>Safety / policy, PR #218: <strong>99</strong> (floor 98)</span><span class="chip pass">PASS</span></li>
+          <li><span>p95 latency vs 5 s promise</span><span class="chip warn">NOT MEASURED</span></li>
+          <li><span>Eval budget: <strong>$187.5K</strong> (cap $200K)</span><span class="chip pass">PASS</span></li>
+        </ul>
+      </div>
+      <div class="grid" style="gap:16px">
+        <div class="card fail">
+          <p class="kicker" style="color:var(--fail)">If we ship now</p>
+          <p class="small"><strong>≥ $2.5M</strong> a year in revenue exposed (50 accounts × $50K). If the 10% rate holds, a VP who asks 10 questions has a <strong>~65%</strong> chance of seeing a wrong price or an unconfirmed fact. Each lost contract: $50–100K.</p>
+        </div>
+        <div class="card">
+          <p class="kicker">If we hold</p>
+          <p class="small">The launch slips <strong>2–4 weeks</strong>, to mid-December, still inside Q4. The cost is time, not trust.</p>
+        </div>
+        <p class="muted small" style="margin:0">Derived figures: 50 × $50,000; 1 − 0.9¹⁰ ≈ 65%. The audit is only 20 answers, so the fixes must be re-tested on a larger set.</p>
+      </div>
+    </div>
+    <p class="src">Source: <code>06-culture/lab-1-ship-hold-memo.md</code></p>
+  </div>
+</section>
+
+<!-- 11 · THE ASK -->
+<section class="slide" data-title="The ask">
+  <div class="inner">
+    <p class="kicker">Decision needed</p>
+    <h2>Approve the HOLD by Friday 13 November 2026</h2>
+    <p class="lede">This is a hold, not a stop. Each step has an owner and a date.</p>
+    <div class="timeline">
+      <div class="step now">
+        <div class="date">Fri 13 Nov 2026</div>
+        <h3>CPO approves the hold</h3>
+        <p class="muted small">The top-50 launch waits for the gates, not for the calendar.</p>
+      </div>
+      <div class="step">
+        <div class="date">By 30 Nov 2026 · re-gate</div>
+        <h3>Fixes land, all gates re-run</h3>
+        <p class="muted small">Engineering: price-database check before any pricing answer, and the PR #218 faithfulness fix. QA team: robustness test set and weekly judge on live answers.</p>
+      </div>
+      <div class="step">
+        <div class="date">Mid-December · inside Q4</div>
+        <h3>Launch to the top 50 accounts</h3>
+        <p class="muted small">Only if Hard = 0%, Soft ≤ 5% and all blocking CI gates pass. If not, I come back with a new date and the numbers behind it.</p>
+      </div>
+    </div>
+    <p class="src">Source: <code>06-culture/lab-1-ship-hold-memo.md</code></p>
+  </div>
+</section>
+
+<!-- 12 · REFLECTION -->
+<section class="slide" data-title="Reflection">
+  <div class="inner">
+    <p class="kicker">Reflection</p>
+    <h2>What defining "good enough" forced me to confront</h2>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card">
+        <div class="num">$10</div>
+        <p class="muted small" style="margin-top:6px">The gap between $49 and $59 is enough to break a promise of verified data. "Good enough" has to be set per failure, not as one overall score.</p>
+      </div>
+      <div class="card">
+        <div class="num">1 of 8</div>
+        <p class="muted small" style="margin-top:6px">Each pricing check caught one hallucination. A check covers the failure it was written for, and nothing else.</p>
+      </div>
+      <div class="card">
+        <div class="num">3 of 20</div>
+        <p class="muted small" style="margin-top:6px">The judge calls I overrode. The judge needs checking too.</p>
+      </div>
+    </div>
+    <div style="margin-top:22px">
+      <blockquote>The hardest part was accepting that "good enough" sometimes means telling the CPO "not yet" when the deadline is close and the numbers say no.</blockquote>
+    </div>
+    <p class="src">Full evaluation system: <code>01-evaluation-strategy/</code> → <code>06-culture/</code> in this repo.</p>
+  </div>
+</section>
+
+<nav class="nav" aria-label="Slide navigation">
+  <button id="prev" aria-label="Previous slide">‹</button>
+  <span class="count" id="count" aria-live="polite"></span>
+  <button id="next" aria-label="Next slide">›</button>
+</nav>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var count = document.getElementById('count');
+    var progress = document.getElementById('progress');
+    var i = 0;
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach(function (s, k) { s.classList.toggle('active', k === i); });
+      count.textContent = (i + 1) + ' / ' + slides.length;
+      progress.style.width = ((i + 1) / slides.length * 100) + '%';
+      document.title = 'Ascend IQ · ' + slides[i].getAttribute('data-title');
+      if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('prev').addEventListener('click', function () { show(i - 1); });
+    document.getElementById('next').addEventListener('click', function () { show(i + 1); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+      else if (e.key === 'Home') { show(0); }
+      else if (e.key === 'End') { show(slides.length - 1); }
+    });
+
+    var touchX = null;
+    document.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 60) show(i + (dx < 0 ? 1 : -1));
+      touchX = null;
+    });
+
+    var start = parseInt((location.hash || '').replace('#', ''), 10);
+    show(isNaN(start) ? 0 : start - 1);
+  })();
+</script>
 </body>
 </html>

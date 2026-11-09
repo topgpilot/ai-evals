@@ -7,7 +7,7 @@
 
 ## The Answer
 
-We should hold the Ascend IQ launch to our top 50 enterprise accounts. In our audit, 1 in 10 answers failed a Hard gate that must be at 0%, including a client being quoted an outdated price, and our clients pay $50,000+ a year for data they can trust. The fixes are known, funded and dated. If the gates pass on 30 November, we can still launch in mid-December, inside Q4.
+We should hold the Ascend IQ launch to our top 50 enterprise accounts. In our audit, 1 in 10 answers failed a Hard gate that must be at 0%, including an outdated price for InsightFlow Enterprise, and our clients pay $50,000+ a year for data they can trust. The fixes are known, funded and dated. If the gates pass on 30 November, we can still launch in mid-December, inside Q4.
 
 ## The Arguments
 
